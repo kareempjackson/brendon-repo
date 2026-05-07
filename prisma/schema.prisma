@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ConnectionStatus {
+  pending
+  accepted
+  declined
+}
+
+model User {
+  id                      String    @id @default(uuid())
+  email                   String    @unique
+  password_hash           String
+  is_verified             Boolean   @default(false)
+  verification_token      String?   @unique
+  verification_expires_at DateTime?
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
+
+  profile               Profile?
+  posts                 Post[]
+  sentConnections       Connection[] @relation("ConnectionRequester")
+  receivedConnections   Connection[] @relation("ConnectionAddressee")
+
+  @@map("users")
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  user_id     String   @unique
+  full_name   String?
+  headline    String?
+  bio         String?
+  location    String?
+  skills      String[] @default([])
+  interests   String[] @default([])
+  seeking     String[] @default([])
+  offering    String[] @default([])
+  avatar_url  String?
+  linkedin_url String?
+  twitter_url  String?
+  website_url  String?
+  is_complete Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([skills], type: Gin)
+  @@index([interests], type: Gin)
+  @@index([seeking], type: Gin)
+  @@index([offering], type: Gin)
+  @@index([location])
+  @@index([created_at])
+  @@map("profiles")
+}
+
+model Post {
+  id         String   @id @default(uuid())
+  user_id    String
+  content    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("posts")
+}
+
+model Connection {
+  id           String           @id @default(uuid())
+  requester_id String
+  addressee_id String
+  status       ConnectionStatus @default(pending)
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+
+  requester User @relation("ConnectionRequester", fields: [requester_id], references: [id], onDelete: Cascade)
+  addressee User @relation("ConnectionAddressee", fields: [addressee_id], references: [id], onDelete: Cascade)
+
+  @@unique([requester_id, addressee_id])
+  @@index([requester_id])
+  @@index([addressee_id])
+  @@index([status])
+  @@map("connections")
+}
