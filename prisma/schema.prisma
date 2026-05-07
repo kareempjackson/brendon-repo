@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// User account for authentication
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  emailVerified Boolean  @default(false) @map("email_verified")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  profile Profile?
+  posts   Post[]
+
+  @@map("users")
+}
+
+/// Startup development stage
+enum StartupStage {
+  IDEA
+  MVP
+  EARLY_TRACTION
+  SCALING
+  ESTABLISHED
+
+  @@map("startup_stage")
+}
+
+/// Entrepreneur profile with startup information
+model Profile {
+  id           String       @id @default(uuid())
+  userId       String       @unique @map("user_id")
+  name         String?
+  bio          String?
+  startupName  String?      @map("startup_name")
+  startupStage StartupStage? @map("startup_stage")
+  industry     String?
+  location     String?
+  linkedinUrl  String?      @map("linkedin_url")
+  isComplete   Boolean      @default(false) @map("is_complete")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([industry])
+  @@index([startupStage])
+  @@map("profiles")
+}
+
+/// Type of post - asking for help or offering help
+enum PostType {
+  ASK
+  OFFER
+
+  @@map("post_type")
+}
+
+/// Category of expertise or resource
+enum PostCategory {
+  TECHNICAL
+  MARKETING
+  SALES
+  FUNDRAISING
+  LEGAL
+  HIRING
+  MENTORSHIP
+  PARTNERSHIP
+  OTHER
+
+  @@map("post_category")
+}
+
+/// Posts for entrepreneurs to ask for or offer help
+model Post {
+  id          String       @id @default(uuid())
+  userId      String       @map("user_id")
+  type        PostType
+  category    PostCategory
+  title       String
+  description String
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([type])
+  @@index([category])
+  @@index([isActive])
+  @@map("posts")
+}
