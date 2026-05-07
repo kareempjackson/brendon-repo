@@ -1,15 +1,17 @@
 import {
   IsString,
-  MaxLength,
   IsArray,
+  IsOptional,
+  MaxLength,
   ArrayMinSize,
   ArrayMaxSize,
   IsEnum,
-  IsOptional,
   ValidateNested,
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { VALID_SKILLS, VALID_SEEKING_TYPES, SkillType, SeekingTypeValue, LocationDto } from './create-profile.dto';
+import { Skill, SeekingType } from '@prisma/client';
+import { LocationDto } from './create-profile.dto';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -26,15 +28,15 @@ export class UpdateProfileDto {
   @IsArray()
   @ArrayMinSize(1)
   @ArrayMaxSize(10)
-  @IsEnum(VALID_SKILLS, { each: true, message: 'Each skill must be a valid skill type' })
-  skills?: SkillType[];
+  @IsEnum(Skill, { each: true })
+  skills?: Skill[];
 
   @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
   @ArrayMaxSize(5)
-  @IsEnum(VALID_SEEKING_TYPES, { each: true, message: 'Each seeking type must be valid' })
-  seeking?: SeekingTypeValue[];
+  @IsEnum(SeekingType, { each: true })
+  seeking?: SeekingType[];
 
   @IsOptional()
   @ValidateNested()
@@ -42,6 +44,6 @@ export class UpdateProfileDto {
   location?: LocationDto;
 
   @IsOptional()
-  @IsString()
-  photoKey?: string;
+  @IsUrl()
+  photoUrl?: string;
 }
