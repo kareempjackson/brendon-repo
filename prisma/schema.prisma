@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Skill {
+  PRODUCT_MANAGEMENT
+  SOFTWARE_ENGINEERING
+  UI_UX_DESIGN
+  DATA_SCIENCE
+  MARKETING
+  SALES
+  FINANCE
+  OPERATIONS
+  LEGAL
+  HR
+  BUSINESS_DEVELOPMENT
+  CUSTOMER_SUCCESS
+  CONTENT_CREATION
+  COMMUNITY_MANAGEMENT
+  GROWTH_HACKING
+}
+
+enum SeekingType {
+  COFOUNDER
+  INVESTOR
+  MENTOR
+  ADVISOR
+  EMPLOYEE
+  FREELANCER
+  PARTNER
+  CUSTOMER
+}
+
+enum PostType {
+  TEXT
+  IMAGE
+  LINK
+}
+
+model User {
+  id                      String    @id @default(cuid())
+  email                   String    @unique
+  passwordHash            String    @map("password_hash")
+  emailVerified           Boolean   @default(false) @map("email_verified")
+  emailVerificationToken  String?   @map("email_verification_token")
+  emailVerificationExpiry DateTime? @map("email_verification_expiry")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  profile Profile?
+  posts   Post[]
+
+  @@map("users")
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  headline  String   @db.VarChar(100)
+  bio       String   @db.VarChar(1000)
+  skills    Skill[]
+  seeking   SeekingType[]
+  city      String?  @db.VarChar(100)
+  country   String?  @db.VarChar(100)
+  photoUrl  String?  @map("photo_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([skills])
+  @@index([seeking])
+  @@index([city, country])
+  @@map("profiles")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  type      PostType @default(TEXT)
+  content   String   @db.Text
+  imageUrl  String?  @map("image_url")
+  linkUrl   String?  @map("link_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("posts")
+}
