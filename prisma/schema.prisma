@@ -2,101 +2,86 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
 }
 
-/// User account for authentication
-model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  passwordHash  String   @map("password_hash")
-  emailVerified Boolean  @default(false) @map("email_verified")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+// ============================================================================
+// ENUMS
+// ============================================================================
 
-  profile Profile?
-  posts   Post[]
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ============================================================================
+// MODELS
+// ============================================================================
+
+model User {
+  id                      String    @id @default(uuid())
+  email                   String    @unique
+  passwordHash            String    @map("password_hash")
+  emailVerified           Boolean   @default(false) @map("email_verified")
+  emailVerificationToken  String?   @map("email_verification_token")
+  emailVerificationExpiry DateTime? @map("email_verification_expiry")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  profile             Profile?
+  sentConnections     Connection[] @relation("SentConnections")
+  receivedConnections Connection[] @relation("ReceivedConnections")
 
   @@map("users")
 }
 
-/// Startup development stage
-enum StartupStage {
-  IDEA
-  MVP
-  EARLY_TRACTION
-  SCALING
-  ESTABLISHED
-
-  @@map("startup_stage")
-}
-
-/// Entrepreneur profile with startup information
 model Profile {
-  id           String       @id @default(uuid())
-  userId       String       @unique @map("user_id")
-  name         String?
-  bio          String?
-  startupName  String?      @map("startup_name")
-  startupStage StartupStage? @map("startup_stage")
-  industry     String?
-  location     String?
-  linkedinUrl  String?      @map("linkedin_url")
-  isComplete   Boolean      @default(false) @map("is_complete")
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  headline    String?  @db.VarChar(255)
+  bio         String?  @db.Text
+  skills      String[] @default([])
+  seeking     String[] @default([])
+  location    String?  @db.VarChar(255)
+  photoUrl    String?  @map("photo_url") @db.VarChar(2048)
+  linkedinUrl String?  @map("linkedin_url") @db.VarChar(2048)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
+  // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([industry])
-  @@index([startupStage])
+  @@index([location])
+  @@index([skills], type: Gin)
+  @@index([seeking], type: Gin)
   @@map("profiles")
 }
 
-/// Type of post - asking for help or offering help
-enum PostType {
-  ASK
-  OFFER
+model Connection {
+  id          String           @id @default(uuid())
+  requesterId String           @map("requester_id")
+  recipientId String           @map("recipient_id")
+  status      ConnectionStatus @default(PENDING)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
 
-  @@map("post_type")
-}
+  // Relations
+  requester User @relation("SentConnections", fields: [requesterId], references: [id], onDelete: Cascade)
+  recipient User @relation("ReceivedConnections", fields: [recipientId], references: [id], onDelete: Cascade)
 
-/// Category of expertise or resource
-enum PostCategory {
-  TECHNICAL
-  MARKETING
-  SALES
-  FUNDRAISING
-  LEGAL
-  HIRING
-  MENTORSHIP
-  PARTNERSHIP
-  OTHER
-
-  @@map("post_category")
-}
-
-/// Posts for entrepreneurs to ask for or offer help
-model Post {
-  id          String       @id @default(uuid())
-  userId      String       @map("user_id")
-  type        PostType
-  category    PostCategory
-  title       String
-  description String
-  isActive    Boolean      @default(true) @map("is_active")
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([type])
-  @@index([category])
-  @@index([isActive])
-  @@map("posts")
+  // Ensure unique connection pairs and prevent self-connections
+  @@unique([requesterId, recipientId])
+  @@index([requesterId])
+  @@index([recipientId])
+  @@index([status])
+  @@map("connections")
 }
