@@ -1,0 +1,207 @@
+:root {
+  /* ============================================
+     BRENDON TEST DESIGN LANGUAGE TOKENS
+     A network for entrepreneurs to connect
+     ============================================ */
+
+  /* ===========================================
+     COLORS — Brand Palette
+     =========================================== */
+  
+  /* Primary — Trust-inspiring deep blue */
+  --color-brand-primary: #2563EB;
+  --color-brand-primary-hover: #1D4ED8;
+  --color-brand-primary-active: #1E40AF;
+  --color-brand-primary-subtle: #DBEAFE;
+  
+  /* Accent — Warm amber for energy & action */
+  --color-brand-accent: #F59E0B;
+  --color-brand-accent-hover: #D97706;
+  --color-brand-accent-subtle: #FEF3C7;
+  
+  /* Success — Confident green */
+  --color-semantic-success: #10B981;
+  --color-semantic-success-subtle: #D1FAE5;
+  
+  /* Warning — Alert amber */
+  --color-semantic-warning: #F59E0B;
+  --color-semantic-warning-subtle: #FEF3C7;
+  
+  /* Error — Clear red */
+  --color-semantic-error: #EF4444;
+  --color-semantic-error-subtle: #FEE2E2;
+  
+  /* Info — Calm blue */
+  --color-semantic-info: #3B82F6;
+  --color-semantic-info-subtle: #DBEAFE;
+
+  /* ===========================================
+     COLORS — Neutral Scale (Dark-first)
+     =========================================== */
+  --color-gray-950: #0A0A0B;
+  --color-gray-900: #111113;
+  --color-gray-800: #1C1C1F;
+  --color-gray-700: #2E2E32;
+  --color-gray-600: #46464D;
+  --color-gray-500: #64646D;
+  --color-gray-400: #8B8B96;
+  --color-gray-300: #B4B4BD;
+  --color-gray-200: #D4D4DB;
+  --color-gray-100: #EBEBEF;
+  --color-gray-50: #F7F7F8;
+  --color-white: #FFFFFF;
+
+  /* ===========================================
+     COLORS — Semantic Backgrounds
+     =========================================== */
+  --color-bg-primary: var(--color-gray-950);
+  --color-bg-secondary: var(--color-gray-900);
+  --color-bg-tertiary: var(--color-gray-800);
+  --color-bg-elevated: var(--color-gray-800);
+  --color-bg-overlay: rgba(10, 10, 11, 0.8);
+  
+  /* ===========================================
+     COLORS — Semantic Text
+     =========================================== */
+  --color-text-primary: var(--color-gray-50);
+  --color-text-secondary: var(--color-gray-400);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-disabled: var(--color-gray-600);
+  --color-text-inverse: var(--color-gray-950);
+  
+  /* ===========================================
+     COLORS — Borders
+     =========================================== */
+  --color-border-default: var(--color-gray-800);
+  --color-border-subtle: var(--color-gray-900);
+  --color-border-strong: var(--color-gray-700);
+  --color-border-focus: var(--color-brand-primary);
+
+  /* ===========================================
+     TYPOGRAPHY — Font Families
+     =========================================== */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+
+  /* ===========================================
+     TYPOGRAPHY — Font Sizes
+     =========================================== */
+  --font-size-display-xl: 3.5rem;      /* 56px */
+  --font-size-display-lg: 3rem;        /* 48px */
+  --font-size-display-md: 2.25rem;     /* 36px */
+  --font-size-heading-lg: 1.875rem;    /* 30px */
+  --font-size-heading-md: 1.5rem;      /* 24px */
+  --font-size-heading-sm: 1.25rem;     /* 20px */
+  --font-size-body-lg: 1.125rem;       /* 18px */
+  --font-size-body-md: 1rem;           /* 16px */
+  --font-size-body-sm: 0.875rem;       /* 14px */
+  --font-size-label: 0.875rem;         /* 14px */
+  --font-size-caption: 0.75rem;        /* 12px */
+
+  /* ===========================================
+     TYPOGRAPHY — Line Heights
+     =========================================== */
+  --line-height-display-xl: 1.1;
+  --line-height-display-lg: 1.15;
+  --line-height-display-md: 1.2;
+  --line-height-heading-lg: 1.25;
+  --line-height-heading-md: 1.3;
+  --line-height-heading-sm: 1.35;
+  --line-height-body-lg: 1.6;
+  --line-height-body-md: 1.6;
+  --line-height-body-sm: 1.5;
+  --line-height-label: 1.4;
+  --line-height-caption: 1.4;
+
+  /* ===========================================
+     TYPOGRAPHY — Letter Spacing
+     =========================================== */
+  --letter-spacing-display-xl: -0.03em;
+  --letter-spacing-display-lg: -0.025em;
+  --letter-spacing-display-md: -0.02em;
+  --letter-spacing-heading-lg: -0.015em;
+  --letter-spacing-heading-md: -0.01em;
+  --letter-spacing-heading-sm: -0.01em;
+  --letter-spacing-body-lg: 0;
+  --letter-spacing-body-md: 0;
+  --letter-spacing-body-sm: 0;
+  --letter-spacing-label: 0.01em;
+  --letter-spacing-caption: 0.01em;
+
+  /* ===========================================
+     TYPOGRAPHY — Font Weights
+     =========================================== */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===========================================
+     SPACING — 4px Base Grid
+     =========================================== */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+  --spacing-3xl: 4rem;     /* 64px */
+  --spacing-4xl: 6rem;     /* 96px */
+  --spacing-5xl: 8rem;     /* 128px */
+
+  /* ===========================================
+     BORDER RADIUS
+     =========================================== */
+  --radius-sm: 0.25rem;    /* 4px */
+  --radius-md: 0.5rem;     /* 8px */
+  --radius-lg: 0.75rem;    /* 12px */
+  --radius-xl: 1rem;       /* 16px */
+  --radius-2xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;
+
+  /* ===========================================
+     SHADOWS
+     =========================================== */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.3);
+
+  /* ===========================================
+     MOTION — Durations
+     =========================================== */
+  --duration-instant: 50ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+
+  /* ===========================================
+     MOTION — Easing Functions
+     =========================================== */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+  /* ===========================================
+     BREAKPOINTS (for reference)
+     =========================================== */
+  --breakpoint-mobile: 375px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1280px;
+
+  /* ===========================================
+     Z-INDEX Scale
+     =========================================== */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-toast: 600;
+  --z-tooltip: 700;
+}
