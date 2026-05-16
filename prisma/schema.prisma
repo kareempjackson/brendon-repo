@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ============================================================================
+// MODELS
+// ============================================================================
+
+model User {
+  id                      String    @id @default(uuid())
+  email                   String    @unique
+  passwordHash            String    @map("password_hash")
+  emailVerified           Boolean   @default(false) @map("email_verified")
+  emailVerificationToken  String?   @map("email_verification_token")
+  emailVerificationExpiry DateTime? @map("email_verification_expiry")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  profile             Profile?
+  sentConnections     Connection[] @relation("SentConnections")
+  receivedConnections Connection[] @relation("ReceivedConnections")
+
+  @@map("users")
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  headline    String?  @db.VarChar(255)
+  bio         String?  @db.Text
+  skills      String[] @default([])
+  seeking     String[] @default([])
+  location    String?  @db.VarChar(255)
+  photoUrl    String?  @map("photo_url") @db.VarChar(2048)
+  linkedinUrl String?  @map("linkedin_url") @db.VarChar(2048)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([location])
+  @@index([skills], type: Gin)
+  @@index([seeking], type: Gin)
+  @@map("profiles")
+}
+
+model Connection {
+  id          String           @id @default(uuid())
+  requesterId String           @map("requester_id")
+  recipientId String           @map("recipient_id")
+  status      ConnectionStatus @default(PENDING)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  requester User @relation("SentConnections", fields: [requesterId], references: [id], onDelete: Cascade)
+  recipient User @relation("ReceivedConnections", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  // Ensure unique connection pairs and prevent self-connections
+  @@unique([requesterId, recipientId])
+  @@index([requesterId])
+  @@index([recipientId])
+  @@index([status])
+  @@map("connections")
+}
